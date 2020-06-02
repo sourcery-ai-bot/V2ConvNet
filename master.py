@@ -124,8 +124,6 @@ def train_and_evaluate_model(model, X_train, Y_train, X_test, Y_test, data_augme
                               validation_data=(X_test, Y_test),
                               epochs=nb_epoch, verbose=1, max_q_size=100,
                               callbacks = [lr_reducer, early_stopper])
-        return history
-
     elif no_callbacks == 'True':
         print('Not Using Data Augmentation or Early Stopping and LR Reducer')
         history = model.fit(X_train, Y_train,
@@ -133,8 +131,6 @@ def train_and_evaluate_model(model, X_train, Y_train, X_test, Y_test, data_augme
                             epochs= nb_epoch,
                             validation_data= (X_test, Y_test),
                             shuffle = True)
-        return history
-
     else:
         print ('Not Using Data Augmentation.')
         history = model.fit(X_train, Y_train,
@@ -143,7 +139,8 @@ def train_and_evaluate_model(model, X_train, Y_train, X_test, Y_test, data_augme
                             validation_data = (X_test, Y_test),
                             shuffle = True,
                             callbacks=[lr_reducer, early_stopper]) # Do we need to shuffle?
-        return history
+
+    return history
 
 
 if __name__ == "__main__":
@@ -184,7 +181,7 @@ if __name__ == "__main__":
     loss_function = 'categorical_crossentropy'
     optimizer = 'adadelta'
     plt.figure()
-    for j in range (0, k_folds):
+    for j in range(k_folds):
         if k_folds == 1:
             X_train, X_test, Y_train, Y_test, input_shape = datahandler.SliceAndDice(bkgArray, sigArray, test_size, backend, img_rows, img_cols)
         else:
@@ -297,28 +294,28 @@ if __name__ == "__main__":
         Predictions_Test = Predictions_Test[:, 1]
         rocoutputfile = "/home/lborgna/NN/V2ConvNet/roc_curves/roc_" + timestamp + ".png"
 
-        if save_roc:
-            analysis.generate_results(Y_Test, Predictions_Test, rocoutputfile)
-            analysis.save_results(Y_Test, Predictions_Test, timestamp)
-            print('Test score: ', score [0])
-            print('Test Accuracy: ', score[1])
-        if precision_recall:
-            average_precision = average_precision_score(y_Test, Predictions_Test)
-            print('Average precision-recall score: {0:0.2f}'.format(average_precision))
+    if save_roc:
+        analysis.generate_results(Y_Test, Predictions_Test, rocoutputfile)
+        analysis.save_results(Y_Test, Predictions_Test, timestamp)
+        print('Test score: ', score [0])
+        print('Test Accuracy: ', score[1])
+    if precision_recall:
+        average_precision = average_precision_score(y_Test, Predictions_Test)
+        print('Average precision-recall score: {0:0.2f}'.format(average_precision))
 
-            plt.clf()
-            precision, recall, _ = precision_recall_curve(y_Test, Predictions_Test)
-            plt.plot(recall, precision, color = 'b', alpha = 0.2)
-            plt.fill_between(recall, precision, alpha = 0.2, color = 'b')
-            plt.xlabel('Recall')
-            plt.ylabel('Precision')
-            plt.ylim([0.0, 1.05])
-            plt.xlim([0.0, 1.0])
-            plt.title('Precision-Recall curve AUC: {0:0.4f}'.format(average_precision))
-            plt.savefig('/home/lborgna/NN/V2ConvNet/precision_recall/PR_' + timestamp + '.png')
-            np.save('/home/lborgna/NN/V2ConvNet/precision_recall/PR_arrays/precision_'+timestamp+'.npy', precision)
-            np.save('/home/lborgna/NN/V2ConvNet/precision_recall/PR_arrays/recall_'+timestamp+'.npy', recall)
-            np.save('/home/lborgna/NN/V2ConvNet/precision_recall/PR_arrays/aucpr_' + timestamp + '.npy', average_precision)
+        plt.clf()
+        precision, recall, _ = precision_recall_curve(y_Test, Predictions_Test)
+        plt.plot(recall, precision, color = 'b', alpha = 0.2)
+        plt.fill_between(recall, precision, alpha = 0.2, color = 'b')
+        plt.xlabel('Recall')
+        plt.ylabel('Precision')
+        plt.ylim([0.0, 1.05])
+        plt.xlim([0.0, 1.0])
+        plt.title('Precision-Recall curve AUC: {0:0.4f}'.format(average_precision))
+        plt.savefig('/home/lborgna/NN/V2ConvNet/precision_recall/PR_' + timestamp + '.png')
+        np.save('/home/lborgna/NN/V2ConvNet/precision_recall/PR_arrays/precision_'+timestamp+'.npy', precision)
+        np.save('/home/lborgna/NN/V2ConvNet/precision_recall/PR_arrays/recall_'+timestamp+'.npy', recall)
+        np.save('/home/lborgna/NN/V2ConvNet/precision_recall/PR_arrays/aucpr_' + timestamp + '.npy', average_precision)
 
     if save_cm:
         plt.clf()

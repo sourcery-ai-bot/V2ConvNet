@@ -18,8 +18,7 @@ def get_activations(model, model_inputs, print_shape_only=False, layer_name=None
     funcs = [K.function(inp + [K.learning_phase()], [out]) for out in outputs]  # evaluation functions
 
     if model_multi_inputs_cond:
-        list_inputs = []
-        list_inputs.extend(model_inputs)
+        list_inputs = list(model_inputs)
         list_inputs.append(1.)
     else:
         list_inputs = [model_inputs, 1.]
@@ -159,7 +158,7 @@ def display_activations2(activation_maps):
             num_activations = len(activations)
             if num_activations > 1024:  # too hard to display it on the screen.
                 square_param = int(np.floor(np.sqrt(num_activations)))
-                activations = activations[0: square_param * square_param]
+                activations = activations[0:square_param**2]
                 activations = np.reshape(activations, (square_param, square_param))
             else:
                 activations = np.expand_dims(activations, axis=0)
